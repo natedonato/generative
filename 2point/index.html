@@ -8,8 +8,8 @@
   </head>
   <body>
     <div class="controls">Hey! Check out my cube generator.<br/>
-      <button id="regen">GENERATE NEW</button><br><button id="options">(show options)</button>
-      <br />
+      <button id="options">(options)</button><br />
+      <button id="regen">GENERATE NEW</button><br>
       <div id="optionslist" style="display:none">
       <input type="checkbox" name="scaffold" id="scaffold"> Draw perspective Lines
       <br />
@@ -20,6 +20,8 @@
       <button id="redraw">redraw according to settings</button>
       <br />
       <input type="checkbox" name="noclear" id="noclear"> Don't erase previous when regenerating
+      <br />
+      <input type="checkbox" name="nomove" id="nomove"> Don't move vanishing points when regenerating
       </div>
     </div>
     <canvas id="canvas1" width="1000" height="750"></canvas>
@@ -90,8 +92,6 @@
             /** @type {CanvasRenderingContext2D} */
             this.ctx = canvas.getContext("2d");
             this.ctx.scale(2, 2);
-
-
             this.left = {};
             this.right = {};
             this.bottomCorner = {};
@@ -116,17 +116,29 @@
           }
 
           reset(){
+
+
             this.resetPoints();
+
             this.setPoints();
+
             this.draw();
           }
 
           //reset all the stuff to default
           resetPoints(){
+
             this.width = this.canvas.width / 2;
             this.height = this.canvas.height / 2;
-            this.left = {};
-            this.right = {};
+
+            if(document.getElementById('nomove').checked){
+              this.prevLeft = {...this.left};
+              this.prevRight = {...this.right};
+            }else{
+              this.left = {};
+              this.right = {};
+            }
+
             this.bottomCorner = {};
             this.bottomLeftCorner = {};
             this.bottomRightCorner = {};
@@ -143,9 +155,6 @@
           }
 
           draw=() => {
-
-            console.log(this.width, this.height)
-
             if(document.getElementById('noclear').checked !== true){
               this.ctx.clearRect(0,0,this.width, this.height);
             }
@@ -298,11 +307,17 @@
           }
 
           setPoints() {
+            if(document.getElementById('nomove').checked !== true){
             this.left.x = between(this.width * -1, this.width * 0.25);
             this.left.y = between(0.05 * this.height, 0.95 * this.height);
 
-            this.right.x = between(this.width * 0.75, this.width * 1.25);
-            this.right.y = between(0.05 * this.height, 0.95 * this.height);
+              this.right.x = between(this.width * 0.75, this.width * 1.25);
+              this.right.y = between(0.05 * this.height, 0.95 * this.height);
+
+          }else{
+            this.left = this.prevLeft;
+            this.right = this.prevRight;
+          }
 
             this.bottomCorner.x = between(this.width * 0.25, this.width * 0.75);
             this.bottomCorner.y = between(this.height * 0.4, this.height * 0.9);
@@ -432,7 +447,7 @@
           sizeCanvas();
 
           canvas.getContext("2d").scale(2, 2);
-          gen.reset();
+          gen.draw();
         }
         
       });
@@ -442,17 +457,21 @@
         box-sizing: border-box;
       }
 
+      #regen{
+        padding: 10px 20px;
+      }
+
       .controls {
         position: absolute;
-        top: 0;
-        left: 0;
+        bottom: 0;
+        right: 0;
         width: 300px;
         max-width: 80%;
         height: auto;
-        background-color: white;
+        background-color: rgb(255 255 255 / 60%);
         padding: 5px 10px;
 
-        border-bottom-right-radius: 10px;
+        border-top-right-radius: 10px;
       }
 
       body {
