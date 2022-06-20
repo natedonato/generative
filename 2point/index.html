@@ -18,6 +18,8 @@
       <input type="checkbox" name="outline" id="outline"> Outline visible box face outlines
       <br />
       <button id="redraw">redraw according to settings</button>
+      <br />
+      <input type="checkbox" name="noclear" id="noclear"> Don't clear the canvas when generating
     </div>
     <canvas id="canvas1" width="1000" height="750"></canvas>
 
@@ -143,7 +145,7 @@
 
             console.log(this.width, this.height)
 
-            if(true){
+            if(document.getElementById('noclear').checked !== true){
               this.ctx.clearRect(0,0,this.width, this.height);
             }
           
@@ -167,11 +169,11 @@
             // draw outline
             this.ctx.strokeStyle = "rgba(0,0,255,100)";
 
-            // // draw line through leading edge
-            // this.drawLine(
-            //   { x: this.bottomCorner.x, y: 0 },
-            //   { x: this.bottomCorner.x, y: this.height }
-            // );
+            // draw line through leading edge
+            this.drawLine(
+              { x: this.bottomCorner.x, y: 0 },
+              { x: this.bottomCorner.x, y: this.height }
+            );
 
             //draw from infinities to leading edge
             this.drawLine(this.left, this.bottomCorner);
