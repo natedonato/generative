@@ -7,10 +7,10 @@
     <title>Two Pont Perspective</title>
   </head>
   <body>
-    <div class="controls">Hey!
+    <div class="controls">Hey! Check out my cube generator.<br/>
+      <button id="regen">GENERATE NEW</button><br><button id="options">(show options)</button>
       <br />
-      <button id="regen">GENERATE</button>
-      <br />
+      <div id="optionslist" style="display:none">
       <input type="checkbox" name="scaffold" id="scaffold"> Draw perspective Lines
       <br />
       <input type="checkbox" checked name="fill" id="fill"> Fill in visible box faces
@@ -19,7 +19,8 @@
       <br />
       <button id="redraw">redraw according to settings</button>
       <br />
-      <input type="checkbox" name="noclear" id="noclear"> Don't clear the canvas when generating
+      <input type="checkbox" name="noclear" id="noclear"> Don't erase previous when regenerating
+      </div>
     </div>
     <canvas id="canvas1" width="1000" height="750"></canvas>
 
@@ -408,11 +409,23 @@
         window.gen = gen;
         let regen = document.getElementById('regen');
         regen.onclick = () => gen.reset();
+
         let redraw = document.getElementById('redraw');
         redraw.onclick = () => gen.draw();
+        let options = document.getElementById('options');
+        let optionslist = document.getElementById('optionslist');
 
         
+        options.onclick = () => {
+          if(optionslist.style.display === "none"){
+            optionslist.style.display = "block"
+          }else{
+            optionslist.style.display = "none"
+          }
+
+        }
         
+
 
 
         window.onresize = (e) =>{
@@ -433,9 +446,13 @@
         position: absolute;
         top: 0;
         left: 0;
-        width: 200px;
-        height: 200px;
-        background-color: gray;
+        width: 300px;
+        max-width: 80%;
+        height: auto;
+        background-color: white;
+        padding: 5px 10px;
+
+        border-bottom-right-radius: 10px;
       }
 
       body {
@@ -445,6 +462,7 @@
         justify-content: center;
         align-items: center;
         margin: 0;
+        background-color: #f6f6f6;
       }
     </style>
   </body>
