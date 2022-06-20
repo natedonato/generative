@@ -11,14 +11,13 @@
       <br />
       <button id="regen">GENERATE</button>
       <br />
-      <button id="redraw">draw</button>
-      <br />
       <input type="checkbox" name="scaffold" id="scaffold"> Draw perspective Lines
       <br />
       <input type="checkbox" checked name="fill" id="fill"> Fill in visible box faces
       <br />
       <input type="checkbox" name="outline" id="outline"> Outline visible box face outlines
-
+      <br />
+      <button id="redraw">redraw according to settings</button>
     </div>
     <canvas id="canvas1" width="1000" height="750"></canvas>
 
@@ -26,11 +25,18 @@
       document.addEventListener("DOMContentLoaded", () => {
         let canvas = document.getElementById("canvas1");
 
-        // size canvas 2x for my retina screen 
-        canvas.width = window.innerWidth * 2;
-        canvas.height = window.innerHeight * 2;
-        canvas.style.width = `${Math.floor(window.innerWidth)}px`;
-        canvas.style.height = `${Math.floor(window.innerHeight)}px`;
+
+        function sizeCanvas(){
+                  let canvas = document.getElementById("canvas1");
+
+          // size canvas 2x for my retina screen 
+          canvas.width = window.innerWidth * 2;
+          canvas.height = window.innerHeight * 2;
+          canvas.style.width = `${Math.floor(window.innerWidth)}px`;
+          canvas.style.height = `${Math.floor(window.innerHeight)}px`;
+        }
+
+        sizeCanvas();
 
         // utility random function
         function between(min, max) {
@@ -114,6 +120,8 @@
 
           //reset all the stuff to default
           resetPoints(){
+            this.width = this.canvas.width / 2;
+            this.height = this.canvas.height / 2;
             this.left = {};
             this.right = {};
             this.bottomCorner = {};
@@ -131,7 +139,9 @@
             this.topVis = false;
           }
 
-          draw(){
+          draw=() => {
+
+            console.log(this.width, this.height)
 
             if(true){
               this.ctx.clearRect(0,0,this.width, this.height);
@@ -400,7 +410,15 @@
         redraw.onclick = () => gen.draw();
 
         
+        
 
+
+        window.onresize = (e) =>{
+          sizeCanvas();
+
+          canvas.getContext("2d").scale(2, 2);
+          gen.reset();
+        }
         
       });
     </script>
@@ -425,11 +443,6 @@
         justify-content: center;
         align-items: center;
         margin: 0;
-      }
-      #canvas1 {
-        /* box-sizing: content-box;
-        width: 600px;
-        height: 600px; */
       }
     </style>
   </body>
