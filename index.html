@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Two Pont Perspective</title>
+  </head>
+  <body>
+    <canvas id="canvas1" width="600" height="600"></canvas>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        let canvas = document.getElementById("canvas1");
+
+        function between(min, max) {
+          return Math.floor(Math.random() * (max - min) + min);
+        }
+
+        // line intercept math by Paul Bourke http://paulbourke.net/geometry/pointlineplane/
+        // Determine the intersection point of two line segments
+        // Return FALSE if the lines don't intersect
+        function intersect(x1, y1, x2, y2, x3, y3, x4, y4) {
+          console.log(x1, y1, x2, y2, x3, y3, x4, y4)
+
+
+
+          // Check if none of the lines are of length 0
+          if ((x1 === x2 && y1 === y2) || (x3 === x4 && y3 === y4)) {
+            console.log("line length 0")
+            return false;
+          }
+
+          denominator = (y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1);
+
+          // Lines are parallel
+          if (denominator === 0) {
+            "console.log(lines parallel)"
+            return false;
+          }
+
+          let ua =
+            ((x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3)) / denominator;
+          let ub =
+            ((x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3)) / denominator;
+
+          // is the intersection along the segments
+          if (ua < 0 || ua > 1 || ub < 0 || ub > 1) {
+            return false;
+          }
+
+          // Return a object with the x and y coordinates of the intersection
+          let x = x1 + ua * (x2 - x1);
+          let y = y1 + ua * (y2 - y1);
+
+          console.log("point", x,y)
+          return { x, y };
+        }
+
+        class Generator {
+          constructor(canvas) {
+            this.height = canvas.height;
+            this.width = canvas.width;
+            this.canvas = canvas;
+            /** @type {CanvasRenderingContext2D} */
+            this.ctx = canvas.getContext("2d");
+            this.left = {};
+            this.right = {};
+            this.bottomCorner = {};
+            this.topCorner = {};
+            this.leftSide = {};
+            this.rightSide = {};
+            this.centerSide = {};
+
+
+            this.setPoints();
+
+            
+            // draw outline
+            this.ctx.strokeStyle = 'rgba(0,0,255,100)';
+
+            //draw line through leading edge
+            this.drawLine({ x: this.bottomCorner.x, y: 0 }, { x: this.bottomCorner.x, y: this.height });
+
+            //draw from infinities to leading edge
+            this.drawLine(this.left, this.bottomCorner);
+            this.drawLine(this.left, this.topCorner);
+            this.drawLine(this.right, this.bottomCorner);
+            this.drawLine(this.right, this.topCorner);
+
+
+            // draw vertical lines for left and right edges
+            this.drawLine(this.rightSide.bottom, this.rightSide.top);
+            this.drawLine(this.leftSide.bottom, this.leftSide.top);
+
+
+            // draw lines for top face
+            this.drawLine(this.left, this.topRightCorner);
+            this.drawLine(this.right, this.topLeftCorner);
+
+            // draw lines for bottom face
+            this.drawLine(this.left, this.bottomRightCorner);
+            this.drawLine(this.right, this.bottomLeftCorner);
+
+            
+
+            // draw actual box outline
+
+            // draw line through leading edge
+            this.ctx.strokeStyle = "red"
+            this.drawLine(this.bottomCorner, this.topCorner)
+
+            this.drawLine(this.bottomLeftCorner, this.bottomCorner);
+            this.drawLine(this.topLeftCorner, this.bottomLeftCorner);
+            this.drawLine(this.topLeftCorner, this.topCorner);
+
+
+
+
+
+
+          }
+
+          intersectPoints(p1, p2, p3, p4) {
+            return intersect(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y, p4.x, p4.y);
+          }
+
+          setPoints() {
+            this.left.x = between(-this.width - 200, -this.width + 200);
+            this.left.y = between(0.25 * this.height, 0.65 * this.height);
+
+            this.right.x = between(this.width * 2 - 200, this.width * 2 + 200);
+            this.right.y = between(0.25 * this.height, 0.65 * this.height);
+
+            this.bottomCorner.x = between(this.width * 0.25, this.width * 0.75);
+            this.bottomCorner.y = between(this.height * 0.1, this.height * 0.9);
+
+            this.topCorner.x = this.bottomCorner.x;
+            this.topCorner.y = between(this.bottomCorner.y, 0);
+
+            let leftX = between(0, this.bottomCorner.x);
+            this.leftSide = {bottom: {x: leftX, y:0}, top:{x:leftX, y:this.height}}
+
+            let rightX = between(this.bottomCorner.x, this.width);
+            this.rightSide = {bottom: {x: rightX, y:0}, top:{x:rightX, y:this.height}}
+
+            this.bottomLeftCorner = this.intersectPoints(this.left, this.bottomCorner, this.leftSide.bottom, this.leftSide.top);
+            this.bottomRightCorner = this.intersectPoints(this.right, this.bottomCorner, this.rightSide.bottom, this.rightSide.top);
+            
+            this.topLeftCorner = this.intersectPoints(this.left, this.topCorner, this.leftSide.bottom, this.leftSide.top);
+            this.topRightCorner = this.intersectPoints(this.right, this.topCorner, this.rightSide.bottom, this.rightSide.top);
+
+            console.log(this.topRightCorner);
+          }
+
+          drawLine(point1, point2) {
+
+            this.ctx.beginPath();
+            this.ctx.moveTo(point1.x, point1.y);
+            this.ctx.lineTo(point2.x, point2.y);
+            this.ctx.stroke();
+          }
+
+          drawVertical(x) {
+            this.ctx.beginPath();
+            this.ctx.moveTo(x, 0);
+            this.ctx.lineTo(x, this.height);
+            this.ctx.stroke();
+          }
+        }
+
+        const gen = new Generator(canvas);
+      });
+    </script>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      #canvas1 {
+        box-sizing: content-box;
+        width: 600px;
+        height: 600px;
+        border: 1px solid black;
+      }
+    </style>
+  </body>
+</html>
