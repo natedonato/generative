@@ -8,6 +8,8 @@ The cubes are generated using linear projections from 2 randomly selected vanish
 
 ![2 point perspective](/img/pencil.jpg)
 
-By digitizing the techique and adding interactable / adjustable controls we create a new creative experience producing unique results on every generation.
+By adapting the techique for web and adding interactable / adjustable controls we create a new creative and expressive experience where users can produce their own unique results on every generation.
 
 ![random cubes](/img/random-cubes.gif)
+
+Give it a try yourself at [natedonato.com/generative/2point/](https://natedonato.com/generative/2point/)!  
