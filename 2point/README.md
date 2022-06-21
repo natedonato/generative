@@ -4,11 +4,11 @@ This project uses the traditional drawing technique of [two point perpectve](htt
 
 ![cube drawing](/img/cube-draw.gif)
 
-The cubes are generated using linear projections from 2 randomly selected vanishing points, combined strategically with vertical projections and a little math to calculate the appropriate coordinates for visible faces and edges.  The technique is traditionally easily achieveable by pen andpaper combined with a ruler or straightedge.
+In this mini web app, three dimensional images of cubes are generated on demand.  Using linear projections from 2 randomly selected vanishing points combined strategically with vertical projections and a little math to calculate the appropriate coordinates for visible faces and edges, an endless stream of unique and sometimes unexpected cubes can be rendered in a variety user of configurable styles.  
 
 ![2 point perspective](/img/pencil.jpg)
 
-By adapting the techique for web and adding interactable / adjustable controls we create a new creative and expressive experience where users can produce their own unique results on every generation.
+The two point perspective drawing technique is traditionally easily achieveable by pen andpaper combined with a ruler or straightedge.  By adapting the techique for web and adding interactable / adjustable controls we create a new creative and expressive experience where users can produce their own unique visuals and 3 dimensional projections on every generation.
 
 ![random cubes](/img/random-cubes.gif)
 
