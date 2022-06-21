@@ -7,22 +7,35 @@
     <title>2-point CubeGen</title>
   </head>
   <body>
-    <div class="controls">Hey! Check out my cube generator.<br/>
-      <button id="options">(options)</button><br />
-      <button id="regen">GENERATE NEW</button><br>
-      <div id="optionslist" style="display:none">
-      <input type="checkbox" name="scaffold" id="scaffold"> Draw perspective Lines
-      <br />
-      <input type="checkbox" checked name="fill" id="fill"> Fill in visible box faces
-      <br />
-      <input type="checkbox" name="outline" id="outline"> Outline visible box face outlines
-      <br />
-      <button id="redraw">redraw according to settings</button>
-      <br />
-      <input type="checkbox" name="noclear" id="noclear"> Don't erase previous when regenerating
-      <br />
-      <input type="checkbox" name="nomove" id="nomove"> Don't move vanishing points when regenerating
-      </div>
+    
+    <div class="controls">
+      <div style="font-size: 24px;">tap anywhere to generate a new cube</div>
+      <button id="options">(toggle options show)</button><br />
+      <div id="optionslist" style="display:none; font-size: 18px; line-height: 24px;"><br />Hey! Check out my cube generator.<br /><br />
+        Draw Options:<br/>
+        <input type="checkbox" name="scaffold" id="scaffold"> Draw vanishing perspective lines that help calculate the cube
+        <br />
+        <input type="checkbox" checked name="fill" id="fill"> Fill in visible cube faces with color
+        <br />
+        <input type="checkbox" name="outline" id="outline"> Draw a red outline around visible cube face edges
+        <br />
+        <br />
+        <button id="redraw">redraw last cube with new settings</button>
+        <br />
+        <br />
+        Advanced options:
+        <br />
+        <input type="checkbox" name="noclear" id="noclear"> Don't erase previous when regenerating
+        <br />
+        <input type="checkbox" name="nomove" id="nomove"> Don't move vanishing points when regenerating
+        <br />
+        <!-- <button id="resetSettings">Reset to default settings</button> -->
+        <!-- <button id="regen">GENERATE NEW</button> -->
+        <br>
+        By <a href="https://www.natedonato.com/">Nate Donato</a>!
+      Details on <a href="https://github.com/natedonato/generative/tree/master/2point#two-point-perspective">Github</a>
+    </div>
+    
     </div>
     <canvas id="canvas1" width="1000" height="750"></canvas>
 
@@ -30,9 +43,8 @@
       document.addEventListener("DOMContentLoaded", () => {
         let canvas = document.getElementById("canvas1");
 
-
         function sizeCanvas(){
-                  let canvas = document.getElementById("canvas1");
+          let canvas = document.getElementById("canvas1");
 
           // size canvas 2x for my retina screen 
           canvas.width = window.innerWidth * 2;
@@ -422,8 +434,8 @@
         let gen = new Generator(canvas);
 
         window.gen = gen;
-        let regen = document.getElementById('regen');
-        regen.onclick = () => gen.reset();
+        // let regen = document.getElementById('regen');
+        // regen.onclick = () => gen.reset();
 
         let redraw = document.getElementById('redraw');
         redraw.onclick = () => gen.draw();
@@ -440,8 +452,7 @@
 
         }
         
-
-
+        canvas.addEventListener("click", () =>gen.reset());
 
         window.onresize = (e) =>{
           sizeCanvas();
@@ -465,7 +476,7 @@
         position: absolute;
         bottom: 0;
         right: 0;
-        width: 300px;
+        width: auto;
         max-width: 80%;
         height: auto;
         background-color: rgb(255 255 255 / 60%);
