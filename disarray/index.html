@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Document</title>
+  <title>Disarray</title>
 </head>
 
 <body>
@@ -91,6 +91,113 @@
     <div></div>
     <div></div>
     <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+
+  </div>
+
+  <div id="controls">
+    <button id="toggle">show info / options</button>
+    <div id="options" style="display: none">
+      <br>
+      <div class="slidecontainer">
+        Horizontal dispacement factor: <br>
+        <input type="range" min="5" max="100" value="20" class="slider" id="sliderX">
+      </div>
+      <div class="slidecontainer">
+        Vertical offset factor: <br>
+        <input type="range" min="0" max="80" value="00" class="slider" id="sliderY">
+      </div>
+      <div class="slidecontainer">
+        Rotation factor: <br>
+        <input type="range" min="0" max="180" value="30" class="slider" id="sliderRotation">
+      </div>
+
+      <div class="slidecontainer">
+        Mouse dispacement factor: <br>
+        <input type="range" min="25" max="600" value="360" class="slider" id="sliderFade">
+      </div>
+
+      <br>
+
+      <div class="slidecontainer">
+        Apply color gradients? <input type="checkbox" checked name="colors" id="colors">
+      </div>
+
+      <br>
+      <br>
+      <br>
+
+      By Nate Donato!
+      <br>
+      <br>
+      Based on <a href="http://www.medienkunstnetz.de/works/schotter/">a 1960s work by Georg Nees</a>
+      <br>
+
+      Details coming soon...
+
+    </div>
   </div>
 </body>
 <style>
@@ -98,14 +205,23 @@
     box-sizing: border-box;
   }
 
-  html{
+  #controls {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 5px;
+    z-index: 2;
+    background-color: rgb(255 255 255 / 95%);
+  }
+
+  html {
     touch-action: none;
   }
 
   #container {
     display: grid;
     grid-template-columns: repeat(9, 40px);
-    grid-template-rows: repeat(9, 40px);
+    grid-template-rows: repeat(16, 40px);
     margin: 0;
     position: absolute;
     top: 50%;
@@ -115,18 +231,22 @@
   }
 
   #container div {
+    position: relative;
     width: 42px;
     height: 42px;
     border: 2px solid black;
     margin: -2px;
     /* transition: transform 1s; */
+
+    will-change: transform;
+    transform: translateZ(0);
   }
 
-  @media only screen and (max-width: 600px) {
+  @media only screen and (max-width: 700px) {
     #container {
       grid-template-columns: repeat(9, 1fr);
-      grid-template-rows: repeat(9, 1fr);
-      max-width: 100%;
+      grid-template-rows: repeat(16, 1fr);
+      max-width: min(100%, 56vh);
       width: 100%;
       padding: 20px;
     }
@@ -146,8 +266,53 @@
     return Math.random() < 0.5 ? -1 : 1;
   }
 
+  let colors = true;
+
   let rotationBound = 30;
   let shiftXBound = 20;
+  let shiftYBound = 0;
+
+  let sliderX = document.getElementById('sliderX')
+  sliderX.oninput = function () {
+    shiftXBound = this.value;
+    assignDisplacement();
+  }
+
+  let sliderRotation = document.getElementById('sliderRotation')
+  sliderRotation.oninput = function () {
+    rotationBound = this.value;
+    assignDisplacement();
+  }
+
+  let sliderY = document.getElementById('sliderY')
+    sliderY.oninput = function () {
+      shiftYBound = this.value;
+      assignDisplacement();
+    }
+
+  let checkbox = document.getElementById("colors")
+  checkbox.oninput = function () {
+    colors = checkbox.checked;
+  }
+
+  let fade = 360;
+
+  let sliderFade = document.getElementById('sliderFade')
+  sliderFade.oninput = function () {
+    fade = this.value;
+  }
+
+  let toggle = document.getElementById('toggle')
+  let options = document.getElementById('options')
+
+  toggle.onclick = () => {
+    if (options.style.display === "none") {
+      options.style.display = "block"
+    } else {
+      options.style.display = "none"
+    }
+  }
+
 
   let scalar = 1;
 
@@ -158,27 +323,38 @@
       // console.log(rotationAmt)
       // console.log(square);
       // console.log(square.style);
+      let hue = Math.floor(Math.random() * 357);
       square.dataset.rotation = rotationAmt;
       square.dataset.shift = shiftAmt;
+      square.dataset.hue = hue;
     });
   }
 
-  let fade = 180;
 
   function applyByDist(e) {
     [...squares].forEach((square) => {
       const rect = square.getBoundingClientRect();
 
-      let x = e.clientX - rect.left - 20;
-      let y = e.clientY - rect.top - 20;
+      let x = Math.abs(e.clientX - rect.left - 22);
+      let y = Math.abs(e.clientY - rect.top - 22);
 
-      x = (fade - Math.abs(x)) / fade;
-      y = (fade - Math.abs(y)) / fade;
+      let pos = e.clientY < rect.top - 22 ? 1 : -1
 
-      let val = Math.max(x + y / 2, 0);
+      let val = Math.max((fade - (x + y)) / fade, 0)
+
+      // x = Math.max((fade - x) / fade, 0);
+      // y = Math.max((fade - y) / fade , 0);
+
+      // let val = (x + y) / 2;
 
       square.style.transform = `translate(${val * square.dataset.shift
-        }px) rotate(${square.dataset.rotation * val}deg)`;
+        }px, ${val*shiftYBound * pos}px) rotate(${square.dataset.rotation * val}deg)`;
+      if (colors) {
+        square.style.borderColor = `hsl(${square.dataset.hue}, 100%, ${val * 55}%)`
+      } else {
+        square.style.borderColor = '#000'
+      }
+
     });
   }
 
@@ -199,27 +375,27 @@
     }
   });
 
-    document.addEventListener("touchmove", (e) => {
-      e.preventDefault();
-        if (!ticking) {
-          window.requestAnimationFrame(function () {
-            applyByDist(
-             {
-              clientX: e.targetTouches[0].pageX, clientY: e.targetTouches[0].pageY
-             });
-
-            ticking = false;
+  document.addEventListener("touchmove", (e) => {
+    e.preventDefault();
+    if (!ticking) {
+      window.requestAnimationFrame(function () {
+        applyByDist(
+          {
+            clientX: e.targetTouches[0].pageX, clientY: e.targetTouches[0].pageY
           });
 
-          ticking = true;
-        }
+        ticking = false;
       });
 
-  document.addEventListener("click", (e) => {assignDisplacement();if(window.innerWidth >599){applyByDist(e)}})
+      ticking = true;
+    }
+  });
+
+  document.addEventListener("click", (e) => { assignDisplacement(); if (window.innerWidth > 599) { applyByDist(e) } })
 
   assignDisplacement();
   let position = document.getElementById("container").getBoundingClientRect();
-  applyByDist({ clientX: 250 + position.left, clientY: 680 + position.top });
+  applyByDist({ clientX: 350 + position.left, clientY: 25 + position.top });
 </script>
 
 <!-- </html> -->
