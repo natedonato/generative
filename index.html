@@ -7,10 +7,49 @@
   <title>Nate Donato - Generative</title>
 </head>
 <body>
-  <div>
-    <img src="" alt="">
-    <p>2-point perspective cubes</p>
-  </div>
+  <h1>
+    generative works
+  </h1>  
+  <p> by <a href="https://www.natedonato.com/">nate donato</a></p>
+  <a  class="card" href="https://natedonato.com/generative/2point/">
+    <img class="box img-box"  src="./img/cube-draw.gif" alt="cubes">
+    <p>Two point perspective style cubes</p>
+  </a>
+    <a class="card" href="https://natedonato.com/generative/disarray/">
+      <div class="box" style="border: 1px solid black; overflow: hidden; display: flex; justify-content: center; align-items: center;">
+      <video class="box" autoplay="autoplay" loop="loop" muted playsinline width="200" height="200"
+        style="transform: translateZ(0);">
+        <source src="img/disarray.mov" type="video/mp4" />
+        <!-- <img class="card-img" width="285" height="142" src="img/other.gif" alt="Other clients" /> -->
+      </video>
+      </div>
+      <p>"Schotter (Gravel stones)" interactive</p>
+    </a>
   
 </body>
+<style>
+
+  .box{
+    width: 200px; 
+    height: 200px; 
+    margin: 20px;
+    max-width: 40vw;
+    max-height: 40vw;
+    flex-shrink: 0;
+    flex-grow: 0;
+  }
+
+  .img-box{
+     object-fit: cover; 
+    border-radius: 100%;
+  }
+
+  .card{
+    text-decoration: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+</style>
 </html>
