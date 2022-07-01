@@ -140,7 +140,6 @@
 
           //reset all the stuff to default
           resetPoints(){
-
             this.width = this.canvas.width / 2;
             this.height = this.canvas.height / 2;
 
@@ -254,6 +253,22 @@
             }
           }
 
+          makePath(p1,p2,p3,p4, fill = this.ctx.fillStyle){
+            // console.log(this.width, this.height)
+            let path = `<path d="M${p1.x} ${p1.y} L${p2.x} ${p2.y} L${p3.x} ${p3.y} L${p4.x} ${p4.y} Z" fill="${fill}"></path>`
+            console.log(path)
+
+            this.paths.push(path);
+          }
+
+          makeSvg(){
+            let svg = `
+            <svg height="${this.height}" width="${this.width}">
+              ${this.paths.join("")}
+            </svg>`
+            console.log(svg);
+          }
+
           drawFill() {
             let randomHue = between(0, 255);
 
@@ -265,6 +280,9 @@
             this.ctx.lineTo(this.topLeftCorner.x, this.topLeftCorner.y);
             this.ctx.lineTo(this.topCorner.x, this.topCorner.y);
             this.ctx.fill();
+
+            this.makePath(this.bottomCorner, this.bottomLeftCorner, this.topLeftCorner, this.topCorner)
+
 
             // draw right face fill
             this.ctx.fillStyle = `hsl(${between(
@@ -278,6 +296,8 @@
             this.ctx.lineTo(this.topRightCorner.x, this.topRightCorner.y);
             this.ctx.lineTo(this.topCorner.x, this.topCorner.y);
             this.ctx.fill();
+
+            this.makePath(this.bottomCorner, this.bottomRightCorner, this.topRightCorner, this.topCorner)
 
             if (this.topVis === true) {
               // draw top face fill
@@ -293,6 +313,9 @@
               this.ctx.lineTo(this.topOuterCorner.x, this.topOuterCorner.y);
               this.ctx.lineTo(this.topLeftCorner.x, this.topLeftCorner.y);
               this.ctx.fill();
+
+              this.makePath(this.topCorner, this.topLeftCorner, this.topOuterCorner, this.topRightCorner)
+
             }
             if (this.bottomVis === true) {
               // draw bottom face fill
@@ -312,7 +335,14 @@
               );
               this.ctx.lineTo(this.bottomLeftCorner.x, this.bottomLeftCorner.y);
               this.ctx.fill();
+
+
+              this.makePath(this.bottomCorner, this.bottomLeftCorner, this.bottomOuterCorner, this.bottomRightCorner)
+
             }
+
+            this.makeSvg();
+
           }
 
           intersectPoints(p1, p2, p3, p4) {
@@ -320,6 +350,7 @@
           }
 
           setPoints() {
+            this.paths = [];
             if(document.getElementById('nomove').checked !== true){
             this.left.x = between(this.width * -1, this.width * 0.25);
             this.left.y = between(0.05 * this.height, 0.95 * this.height);
@@ -484,6 +515,9 @@
         padding: 5px 10px;
 
         border-top-left-radius: 10px;
+
+    max-height: 100%;
+    overflow-y: scroll;
       }
 
       body {
