@@ -31,11 +31,7 @@
           justify-content: center;
           align-items: center;
         ">
-      <video id="v1" class="box" autoplay="autoplay" loop="loop" muted playsinline width="200" height="200"
-        style="transform: translateZ(0)">
-        <source src="img/disarray.mp4#t=2.00" type="video/mp4" />
-        <!-- <img class="card-img" width="285" height="142" src="img/other.gif" alt="Other clients" /> -->
-      </video>
+        <img class="box img-box" style="border-radius: 0" src="./img/disarray-still.png" alt="sketch" />
     </div>
     <p class="card-desc">"Schotter (Gravel stones)" interactive - 2022</p>
   </a>
@@ -62,12 +58,7 @@
           justify-content: center;
           align-items: center;
         ">
-      <video id="v2" class="box" autoplay="autoplay" loop="loop" muted playsinline width="200" height="200"
-        style="transform: translateZ(0)">
-        <!-- <source src="img/glitch.webm" type="video/webm"> -->
-        <source src="img/glitch.mp4#t=2.000" type="video/mp4" />
-        <!-- <img class="card-img" width="285" height="142" src="img/other.gif" alt="Other clients" /> -->
-      </video>
+        <img class="box img-box" src="./img/glitch.gif" alt="cubes" />
     </div>
     <p class="card-desc">Glitch, a destructive image editor - 2019</p>
   </a>
@@ -108,37 +99,4 @@
     }
   }
 </style>
-<script>
-
-  Object.defineProperty(HTMLMediaElement.prototype, 'playing', {
-      get: function () {
-        return !!(this.currentTime > 0 && !this.paused && !this.ended && this.readyState > 2);
-      }
-    });
-
-    document.addEventListener("click", startVids);
-    document.addEventListener("touchstart", startVids);
-
-    function startVids(){
-        const videoElement = document.getElementById('v1');
-        if (videoElement.playing) {
-          // video is already playing so do nothing
-        }
-        else {
-          // video is not playing
-          // so play video now
-          videoElement.play();
-        }
-           const videoElement2 = document.getElementById('v2');
-      if (videoElement2.playing) {
-        // video is already playing so do nothing
-      }
-      else {
-        // video is not playing
-        // so play video now
-        videoElement2.play();
-      }
-      }
-  </script>
-
 </html>
