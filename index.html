@@ -89,13 +89,17 @@
     margin: 0 auto;
   }
 
+  .card:nth-child(2n){
+    flex-direction: row-reverse;
+  }
+
   .card-desc {
     flex-grow: 1;
   }
 
   @media only screen and (max-width: 700px) {
     .card {
-      flex-direction: column;
+      flex-direction: column !important;
     }
   }
 </style>
