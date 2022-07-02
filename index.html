@@ -11,19 +11,31 @@
     generative works
   </h1>  
   <p> by <a href="https://www.natedonato.com/">nate donato</a></p>
+      <a class="card" href="https://natedonato.com/generative/disarray/">
+        <div class="box"
+          style="border: 1px solid black; overflow: hidden; display: flex; justify-content: center; align-items: center;">
+          <video class="box" autoplay="autoplay" loop="loop" muted playsinline width="200" height="200"
+            style="transform: translateZ(0);">
+            <source src="img/disarray.mov" type="video/mp4" />
+            <!-- <img class="card-img" width="285" height="142" src="img/other.gif" alt="Other clients" /> -->
+          </video>
+        </div>
+        <p class="card-desc">"Schotter (Gravel stones)" interactive - 2022</p>
+      </a>
   <a  class="card" href="https://natedonato.com/generative/2point/">
     <img class="box img-box"  src="./img/cube-draw.gif" alt="cubes">
-    <p>Two point perspective style cubes</p>
+    <p class="card-desc">Two point perspective illustrator - 2022</p>
   </a>
-    <a class="card" href="https://natedonato.com/generative/disarray/">
-      <div class="box" style="border: 1px solid black; overflow: hidden; display: flex; justify-content: center; align-items: center;">
-      <video class="box" autoplay="autoplay" loop="loop" muted playsinline width="200" height="200"
-        style="transform: translateZ(0);">
-        <source src="img/disarray.mov" type="video/mp4" />
-        <!-- <img class="card-img" width="285" height="142" src="img/other.gif" alt="Other clients" /> -->
-      </video>
+    <a class="card" href="https://natedonato.com/glitch/">
+      <div class="box"
+        style="border-radius: 100%; overflow: hidden; display: flex; justify-content: center; align-items: center;">
+        <video class="box" autoplay="autoplay" loop="loop" muted playsinline width="200" height="200"
+          style="transform: translateZ(0);">
+          <source src="img/glitch.mov" type="video/mp4" />
+          <!-- <img class="card-img" width="285" height="142" src="img/other.gif" alt="Other clients" /> -->
+        </video>
       </div>
-      <p>"Schotter (Gravel stones)" interactive</p>
+      <p class="card-desc">Glitch, destructive image editor - 2019</p>
     </a>
   
 </body>
@@ -33,8 +45,8 @@
     width: 200px; 
     height: 200px; 
     margin: 20px;
-    max-width: 40vw;
-    max-height: 40vw;
+    max-width: 100%;
+    max-height: 100%;
     flex-shrink: 0;
     flex-grow: 0;
   }
@@ -49,7 +61,20 @@
     display: flex;
     justify-content: center;
     align-items: center;
+
+    max-width: 550px;
+    margin: 0 auto;
   }
+
+  .card-desc{
+    flex-grow: 1;
+  }
+
+    @media only screen and (max-width: 700px) {
+      .card{
+        flex-direction: column;
+      }
+    }
 
 </style>
 </html>
