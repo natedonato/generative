@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <div id="container">
+  </div>
+  <h1 id="regen">regenerate</h1>
+  <h4 id="options"> show options </h4>
+
+
+  <div id="optionsBox" style="display: none">
+
+    <!-- <div class="slidecontainer">
+      Line thickness: <br>
+      <input type="range" min="1" max="4" value="1" class="slider" id="thickness">
+    </div> -->
+
+    <!-- <div class="slidecontainer">
+      Max sketchiness: <br>
+      <input type="range" min="0" max="400" value="80" class="slider" id="roughness">
+    </div> -->
+<!-- 
+    <div class="slidecontainer">
+      Number of points: <br>
+      <input type="range" min="2" max="50" value="16" class="slider" id="points">
+    </div> -->
+
+    <div class="slidecontainer">
+      Number of buildings: <br>
+      <input type="range" min="1" max="14" value="5" class="slider" id="buildings">
+    </div>
+
+    <br>
+    Change colors: <br><br>
+    <input type="color" value="#FFFF00" id="bgcolor"> Page background <br>
+    <input type="color" value="#DCDCDC" id="bg2color"> Scene background <br>
+    <input type="color" value="#000000" id="strokecolor"> Building stroke <br>
+
+
+<!-- 
+    <br>
+      Draw a closed shape? <input type="checkbox" checked name="wrap" id="wrap">
+    <br>
+    Erase previous on regenerate? <input type="checkbox" checked name="clear" id="clear">
+    <br> -->
+
+
+    <br><br>
+    Generates unique cityscape SVGs<br>
+    using <a href="https://github.com/rough-stuff/rough">Rough.js</a><br>
+<br>
+    Made by <a href="https://www.natedonato.com/">Nate donato</a>.  
+    <br>
+    <br>
+    see more of my <a href="https://www.natedonato.com/generative/">generative art here</a>!
+    <br>
+    <br>
+    inspired by twitter user <a href="https://twitter.com/reveil_s">reveil_s</a>
+      <h4 id="options2"> hide options </h4>
+  </div>
+
+</body>
+<script src="./rough.js"></script>
+<script>
+
+   let toggle = document.getElementById('options')
+   let toggle2 = document.getElementById('options2')
+    let options = document.getElementById('optionsBox')
+
+    toggle.onclick = () => {
+      if (options.style.display === "none") {
+        options.style.display = "block"
+      } else {
+        options.style.display = "none"
+      }
+    }
+
+    toggle2.onclick = () => {
+        if (options.style.display === "none") {
+          options.style.display = "block"
+        } else {
+          options.style.display = "none"
+        }
+      }
+
+      let bgfill = "#DCDCDC"
+
+  let colorPickerBg = document.getElementById("bgcolor")
+  colorPickerBg.oninput = function () {
+    document.documentElement.style.backgroundColor = colorPickerBg.value;
+  }
+
+    let colorPickerBg2 = document.getElementById("bg2color")
+      colorPickerBg2.oninput = function () {
+        bgfill = colorPickerBg2.value;
+      }
+
+      let strokeCol = "#000000"
+
+         let colorPicker3 = document.getElementById("strokecolor")
+          colorPicker3.oninput = function () {
+            strokeCol = colorPicker3.value;
+          }
+          
+  let height = 600
+
+  // creates and returns svg element
+  function CreateSVG() {
+    let xmlns = "http://www.w3.org/2000/svg";
+    let boxWidth = height;
+    let boxHeight = height;
+    let svgElem = document.createElementNS(xmlns, "svg");
+    svgElem.setAttributeNS(null, "viewBox", "0 0 " + boxWidth + " " + boxHeight);
+    svgElem.setAttributeNS(null, "width", boxWidth);
+    svgElem.setAttributeNS(null, "height", boxHeight);
+    // svgElem.style.display = "block";
+    let svgContainer = document.getElementById("container");
+      svgContainer.appendChild(svgElem);
+      return svgElem
+    }
+
+  function between(a,b){
+    return Math.floor(Math.random()*(b+1 - a)+a)
+  }
+
+  //connects points in an outline.
+  function drawPoints(points, roughcanvas, svg, roughness = 1.0, width = 1){
+    let lines = roughcanvas.linearPath(points,{roughness: roughness, strokeWidth: width })
+    svg.appendChild(lines);    
+  }
+      let bgOffset = 50;
+
+  function setScene(roughcanvas, svg, background = false){
+    // draw white background
+    let bg = roughcanvas.rectangle(0, 0, height, height, { fill: 'white', fillStyle: 'solid', stroke: 'none', roughness: 0 });
+    let bgInner = roughcanvas.rectangle(bgOffset, bgOffset, height - bgOffset - bgOffset, height - bgOffset - bgOffset, {fill: bgfill, fillStyle: 'solid', stroke: 'none', roughness: 2, });
+    svg.appendChild(bg)
+    svg.appendChild(bgInner)
+
+    //draw horizon
+    drawPoints([[height*0.2, height*0.8],[height*0.8,height*0.8]],roughcanvas,svg, between(0.8,2))
+
+  }
+
+  function produceBuildingPoints(){
+
+    let maxWidthTall = 44;
+    let minWidthTall = 32;
+
+    let minWidthWide = 88;
+    let maxWidthWide = 100;
+
+    let wideChance = 0.25;
+
+
+    let maxHeightTall = height - bgOffset * 4;
+    let minHeightTall = maxWidthWide / 2;
+
+    let bounds = [bgOffset, height - 2 * bgOffset];
+
+    let x1 = between(bounds[0] + maxWidthWide, bounds[1] - maxWidthWide);
+    let x2 = 0;
+    let y1 = height* 0.8
+    let y2 = 0;
+    if(Math.random()> wideChance){
+      x2 = maxWidthTall;
+      y2 = -between(minHeightTall,maxHeightTall);
+    }else{
+      y2 = -(maxWidthWide / 2)
+      x2 = between(minWidthWide, maxWidthWide)
+    }
+    return([x1,y1,x2,y2]);
+  }
+
+  function makeFill(){
+
+    let fills = [
+    // { fill: 'black', hachureAngle: 90, },
+    { fill: strokeCol, hachureAngle: 90, stroke: "none"},
+    { fill: strokeCol, hachureAngle: 90, stroke: "none", fillStyle: "dots"},
+    { fill: strokeCol, hachureAngle: 90, stroke: "none", fillStyle: "dashed"},
+    { fill: strokeCol, hachureAngle: 90, stroke: "none", fillWeight: 2, hachureGap: 8},
+    { fill: strokeCol, hachureAngle: 0, stroke: "none", fillWeight: 2, hachureGap: 6},
+
+    { fill: strokeCol, hachureAngle: 0, stroke: "none", hachureWidth: 15, hachureGap: 4},
+    { fill: strokeCol, hachureAngle: -41, stroke: "none", hachureWidth: 15, hachureGap: 4},
+      {
+        fill: strokeCol,
+        hachureAngle: 60, // angle of hachure,
+        hachureGap: 8,
+        fillStyle: "dashed",
+        stroke: "none"
+      }
+
+
+    ]
+
+
+
+
+
+    return fills[between(0,fills.length -1)]
+  }
+
+  function drawBuilding(roughcanvas, svg, points){
+    let fill = makeFill();
+    fill.roughness = 0.2;
+    let building = roughcanvas.rectangle(...points, fill);
+
+    svg.appendChild(building);
+  }
+
+  let numPoints = 16;
+  let wrap = true;
+  let roughness = 0.8;
+  let width = 1;
+  let clearPrev = true;
+  let buildings = 5;
+
+  // let sliderThickness = document.getElementById('thickness')
+  //   sliderThickness.oninput = function () {
+  //     width = this.value;
+  //   }
+
+  // let sliderpoints = document.getElementById('points')
+  //   sliderpoints.oninput = function () {
+  //   numPoints = this.value;
+  // }
+
+  let sliderbuildings = document.getElementById('buildings')
+  sliderbuildings.oninput = function () {
+    buildings = this.value;
+  }
+
+  // let sliderRoughness = document.getElementById("roughness")
+  // sliderRoughness.oninput = function () {
+  //   roughness = this.value * 0.01;
+  // }
+
+  // let checkbox = document.getElementById("wrap")
+  //   checkbox.oninput = function () {
+  //     wrap = checkbox.checked;
+  //   }
+
+  //   let clearbox = document.getElementById("clear")
+  //   clearbox.oninput = function () {
+  //     clearPrev = clearbox.checked;
+  //   }
+
+  regen();
+
+  document.getElementById("regen").onclick = regen;
+
+  function regen(){
+
+
+    if(clearPrev === true){
+      let svgContainer = document.getElementById("container");
+      svgContainer.innerHTML= ""
+    }
+    for(let i = 0; i < 1; i++){
+
+    let svg = CreateSVG();
+    let rc = rough.svg(svg);
+
+    setScene(rc,svg)
+
+    for(let j = 0; j < buildings; j++){
+      let points = produceBuildingPoints();
+      drawBuilding(rc,svg,points)
+
+      // drawPoints(points,rc,svg,Math.random()*roughness,width)
+    }
+
+    }
+  }
+
+</script>
+<style>
+  html{
+    background-color: yellow;
+  }
+  #container{
+    margin: 0 auto;
+    width: auto;
+    /* width: 1200px;
+    max-width: 100%; */
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 80px;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #container svg{
+    /* max-width: 100%; */
+    /* width: 25%; */
+    /* width: 300px; */
+    /* margin: 20px; */
+    /* display: inline-block; */
+  }
+
+  #regen, #options{
+    width: 12rem;
+    max-width: 100%;
+    margin: 50px auto 50px;
+    text-align: center;
+    cursor: pointer;
+    user-select: none; 
+  }
+
+  #options2{
+    cursor: pointer;
+  }
+
+  #regen:hover, #options:hover{
+    opacity: 0.7;
+  }
+
+  #optionsBox{
+    padding: 20px;
+    width: 300px;
+    max-width: 100%;
+    max-height: 100%;
+    overflow-y: scroll;
+    position: fixed;
+    bottom: 0;
+
+    background-color: rgb(255 255 255 / 97%);
+  }
+
+  .slidecontainer{
+    width: 200px;
+    max-width: 100%;
+  }
+
+  #optionsBox input[type=range]{
+    width: 100%;
+  }
+
+  @media screen and (max-width: 1199px) {
+    #container{
+      display: flex;
+      flex-wrap: wrap;
+    }
+
+    #container svg{
+      max-width: 100%;
+      height: auto;
+    }
+    
+  }
+    @media screen and (max-width: 700px) {
+
+      #optionsBox{
+        width: 100%;
+      }
+    }
+
+</style>
+</html>
