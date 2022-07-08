@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sketches 2</title>
+</head>
+
+<body>
+  <div id="container">
+  </div>
+  <h1 id="regen">add</h1>
+  <h4 id="options">tweak</h4>
+
+
+  <div id="optionsBox" style="display: none">
+
+    <div class="slidecontainer">
+      Line thickness: <br>
+      <input type="range" min="1" max="4" value="1" class="slider" id="thickness">
+    </div>
+
+    <div class="slidecontainer">
+      Max sketchiness: <br>
+      <input type="range" min="0" max="800" value="80" class="slider" id="roughness">
+    </div>
+
+    <div class="slidecontainer">
+      Number of points: <br>
+      <input type="range" min="2" max="150" value="16" class="slider" id="points">
+    </div>
+
+    <div class="slidecontainer">
+      Number of shapes: <br>
+      <input type="range" min="1" max="150" value="1" class="slider" id="shapes">
+    </div>
+
+    <div class="slidecontainer">
+      Canvas Size: <br>
+      <input type="range" min="100" max="2400" value="1200" class="slider" id="height">
+    </div>
+
+    <div class="slidecontainer">
+      Right angle rate: <br>
+      <input type="range" min="0" max="100" value="40" class="slider" id="squarerate">
+    </div>
+
+    <div class="slidecontainer">
+      Right angle side length : <br>
+      <input type="range" min="0" max="100" value="20" class="slider" id="length1">
+    </div>
+
+    <div class="slidecontainer">
+      Diagonal side length: <br>
+      <input type="range" min="0" max="100" value="40" class="slider" id="length2">
+    </div>
+
+    <br>
+    Close shape <input type="checkbox" checked name="wrap" id="wrap">
+    <br>
+    Erase previous on regenerate? <input type="checkbox" name="clear" id="clear">
+    <br>
+
+
+    <br><br>
+    Generates unique SVGs with<br>
+    customizable attributes,<br>
+    using <a href="https://github.com/rough-stuff/rough">Rough.js</a><br>
+    <br><br>
+    by <a href="https://www.natedonato.com/">Nate donato</a>.
+    see more of my <a href="https://www.natedonato.com/generative/">generative art here</a>
+    <br>
+    <h4 id="options2"> hide options </h4>
+  </div>
+
+</body>
+<script src="../rough.js"></script>
+<script>
+
+  let toggle = document.getElementById('options')
+  let toggle2 = document.getElementById('options2')
+  let options = document.getElementById('optionsBox')
+
+  toggle.onclick = () => {
+    if (options.style.display === "none") {
+      options.style.display = "block"
+    } else {
+      options.style.display = "none"
+    }
+  }
+
+  toggle2.onclick = () => {
+    if (options.style.display === "none") {
+      options.style.display = "block"
+    } else {
+      options.style.display = "none"
+    }
+  }
+  // creates and returns svg element
+  function CreateSVG(height) {
+    let xmlns = "http://www.w3.org/2000/svg";
+    let boxWidth = height;
+    let boxHeight = height;
+    let svgElem = document.createElementNS(xmlns, "svg");
+    svgElem.setAttributeNS(null, "viewBox", "0 0 " + boxWidth + " " + boxHeight);
+    svgElem.setAttributeNS(null, "width", boxWidth);
+    svgElem.setAttributeNS(null, "height", boxHeight);
+    // svgElem.style.display = "block";
+    let svgContainer = document.getElementById("container");
+    svgContainer.appendChild(svgElem);
+    return svgElem
+  }
+
+  function between(a, b) {
+    let val = Math.floor(Math.random() * (b + 1 - a) + a)
+    return val
+
+  }
+
+  function PopulatePoints(num = 10, min = 0, max, wrap = false, squareRate, l1, l2) {
+
+    let maxDist = height * l1 / 100
+    let maxDist2 = height * l2 / 100
+
+
+    let randomPoint = ( ) =>{
+      let x = between(min, max)
+      let y = between(min, max)
+      return [x,y]
+    }
+
+     let randomBoundedPoint = () => {
+      let last = points[points.length-1]
+      let x = between(Math.max(last[0] - maxDist2, min) , Math.min(last[0] + maxDist2, max))
+      let y = between(Math.max(last[1] - maxDist2, min) , Math.min(last[1] + maxDist2, max))
+      return [x, y]
+    }
+    
+    let points = [randomPoint()];
+
+
+  
+    let randomOnAxis = () => {
+      if(Math.random() > 0.5){
+        return [points[points.length-1][0], between(Math.max(min, points[points.length - 1][1] - maxDist) , Math.min(max, points[points.length - 1][1] + maxDist))  ]
+      }else{
+        return [between(Math.max(min, points[points.length - 1][0] - maxDist), Math.min(max, points[points.length - 1][0] + maxDist)), points[points.length - 1][1]]
+      }
+    }
+
+    for (let i = 0; i < num; i++) {
+      if(Math.random() <= squareRate){
+        points.push(randomOnAxis());
+      }else{
+        points.push(randomBoundedPoint());
+      }
+      
+    }
+
+    if (wrap) {
+      points = [...points, points[0]]
+    }
+    return points
+  }
+
+  function drawPoints(points, roughcanvas, svg, roughness = 1.0, width = 1) {
+    let lines = roughcanvas.linearPath(points, { roughness: roughness, strokeWidth: width })
+    svg.appendChild(lines);
+  }
+    let height = 1200;
+
+  let squareRate = 0.4
+  let numPoints = 16;
+  let wrap = true;
+  let roughness = 0.8;
+  let width = 1;
+  let clearPrev = false;
+  let shapes = 1;
+
+  let length1 = 40;
+  let length2 = 40;
+
+  let sliderThickness = document.getElementById('thickness')
+  sliderThickness.oninput = function () {
+    width = parseInt(this.value);
+  }
+
+  let sliderlength1 = document.getElementById('length1')
+  sliderlength1.oninput = function () {
+    length1 = parseInt(this.value);
+  }
+
+  let sliderlength2 = document.getElementById('length2')
+  sliderlength2.oninput = function () {
+    length2 = parseInt(this.value);
+  }
+
+  let sliderpoints = document.getElementById('points')
+  sliderpoints.oninput = function () {
+    numPoints = this.value;
+  }
+
+  let sliderShapes = document.getElementById('shapes')
+  sliderShapes.oninput = function () {
+    shapes = this.value;
+  }
+  
+  let squareRateSlider = document.getElementById('squarerate')
+  squareRateSlider.oninput = function () {
+    squareRate = this.value / 100;
+  }
+  
+  let sliderHeight = document.getElementById('height')
+  sliderHeight.oninput = function () {
+    height =  parseInt(this.value);
+  }
+
+  let sliderRoughness = document.getElementById("roughness")
+  sliderRoughness.oninput = function () {
+    roughness = this.value * 0.01;
+  }
+
+  let checkbox = document.getElementById("wrap")
+  checkbox.oninput = function () {
+    wrap = checkbox.checked;
+  }
+
+  let clearbox = document.getElementById("clear")
+  clearbox.oninput = function () {
+    clearPrev = clearbox.checked;
+  }
+
+  regen();
+
+  document.getElementById("regen").onclick = regen;
+
+  function regen() {
+
+
+    if (clearPrev === true) {
+      let svgContainer = document.getElementById("container");
+      svgContainer.innerHTML = ""
+    }
+    for (let i = 0; i < 1; i++) {
+
+      let svg = CreateSVG(height);
+      let rc = rough.svg(svg);
+
+      for (let j = 0; j < shapes; j++) {
+
+        let points = PopulatePoints(numPoints, 0, height, wrap, squareRate, length1 , length2);
+
+        drawPoints(points, rc, svg, Math.random() * roughness, width)
+      }
+    }
+  }
+
+</script>
+<style>
+  #container {
+    margin: 0 auto;
+    width: auto;
+    width: 1200px;
+    max-width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 80px;
+  }
+
+  #container svg {
+    max-width: 100%;
+    /* width: 10%; */
+    height: auto;
+    margin-top: 20px;
+
+    /* width: 300px; */
+    /* margin: 20px; */
+    /* display: inline-block; */
+  }
+
+  #regen,
+  #options {
+    width: 12rem;
+    max-width: 100%;
+    margin: 50px auto 50px;
+    text-align: center;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  #options2 {
+    cursor: pointer;
+  }
+
+  #regen:hover,
+  #options:hover {
+    opacity: 0.7;
+  }
+
+  #optionsBox {
+    padding: 20px;
+    width: 300px;
+    max-width: 100%;
+    max-height: 100%;
+    overflow-y: scroll;
+    position: fixed;
+    bottom: 0;
+
+    background-color: rgb(255 255 255 / 97%);
+  }
+
+  .slidecontainer {
+    width: 200px;
+    max-width: 100%;
+  }
+
+  #optionsBox input[type=range] {
+    width: 100%;
+  }
+
+  @media screen and (max-width: 700px) {
+
+    #optionsBox {
+      width: 100%;
+    }
+  }
+</style>
+
+</html>
