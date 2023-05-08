@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Specimen Samples | Nate Donato</title>
+</head>
+<body>
+  <canvas id="c1" width="20" height="20"></canvas>
+  <br />
+  <canvas id="c2" width="1600" height="1600"></canvas>
+  <a class="renew" href="./">New specimen?</a>
+  <div id="info">
+  </div>
+  <div class="links">
+    <a href="../">&lt;== Back to generatives hub</a>
+  </div>
+</body>
+<style>
+  body{
+    background: black;
+  }
+  *{
+    box-sizing: border-box;
+  }
+  #c1{
+    background: white;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: -webkit-crisp-edges;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    width: 400px;
+    height: auto;
+    border: 2px solid red;
+    display: none;
+  }
+  #c2{    
+    display: block;
+    margin: auto auto;
+    width: 800px;
+    max-width: 90vmin;
+    height: auto;
+    /* border: 2px solid red; */
+  }
+
+  #info, .links, .renew{
+    color: white;
+    border: 1px solid white;
+    margin: 20px auto;
+    display: flex;
+    flex-direction: column;
+    padding: 8px;
+    border-radius: 4px;
+    width: fit-content;
+  }
+
+  .renew{
+    width: fit-content;
+    margin-top: -20px;
+  }
+
+  .links{
+    width: fit-content;
+  }
+  a, a.visited{
+    text-decoration: none;
+    color: white;
+  }
+</style>
+<script>
+  let information = [];
+
+  const c1 = document.getElementById("c1");
+  /** @type {CanvasRenderingContext2D} */
+  const ctx1 = c1.getContext("2d");
+
+  const c2 = document.getElementById("c2");
+  /** @type {CanvasRenderingContext2D} */
+  const ctx2 = c2.getContext("2d");
+  // ctx2.scale(2,2);
+
+  let width = gaussianRandom(26,66);
+
+  let maxR;
+
+
+  c1.width = width;
+  c1.height = width;
+  let blurVal = between(2,3)
+
+
+  let shapes = ["regular", "regular", "regular", "chaotic"];
+  
+  let shape = shapes[between(0, shapes.length-1)];
+
+  console.log("shape", shape);
+  information.push("Energy: "+shape)
+
+  let seedFrames = [];
+  //sample pixel
+  // ctx1.fillRect(0,0,1,1);
+  function drawSeed(){
+    ctx1.clearRect(0,0,c1.width, c1.height)
+    ctx1.filter = `blur(${blurVal}px)`;
+    let r = width / 10;
+    for(let i = 0; i < 5; i++){
+      let b = r + 2* blurVal;
+
+      let x,y;
+
+      if(shape === "regular"){
+        x = gaussianRandom(width/5, 4 * width /5)
+        y = gaussianRandom(width/5, 4 * width /5)
+      }
+      if(shape ==="chaotic"){
+        x = between(width / 4, 3 * width / 4)
+        y = between(width / 4, 3 * width / 4)
+      }
+
+      // let y = gaussianRandom(b, width-b)
+
+
+
+      // ctx1.arc(x,y, r, 0, Math.PI * 2);
+
+      // let r = width / 4;
+      ctx1.moveTo(x-r, y)
+      ctx1.lineTo(x+r, y)
+      ctx1.lineTo(x, y +r)
+
+      ctx1.fill()
+    }
+    seedFrames.push(ctx1.getImageData(0,0,c1.width, c1.height));
+  }
+
+  let fills = []
+
+  // white
+  fills.push("rgba(255,255,255,0.99)")
+
+  // pink
+  fills.push("rgba(255,7,129,1)")
+
+  // random hsl
+  fills.push(`hsla(${between(0,360)},100%,${between(50,100)}%)`)
+
+  //rainbow
+  fills.push("rainbow")
+
+
+  let dotFill  = fills[between(0, fills.length-1)]
+
+
+
+  let patterns = ["lines", "regular", "random regular","clumps"]
+  let pattern = patterns[between(0, patterns.length-1)]
+  
+  
+  let phases = ["aligned", "desynchronized", "desynchronized", "desynchronized",]
+  let phase = phases[between(0, phases.length-1)]
+  let invert = Math.random() > 0.9;
+  if(invert === true){
+    document.body.parentElement.style.filter = "invert(1)";
+  };
+
+
+  console.log("pattern", pattern)
+  console.log("phase", phase)
+  console.log("color", dotFill)
+
+  information.push("Pattern: " + pattern);
+  information.push("Phase: " + phase);
+  information.push("Color: " + dotFill);
+  information.push("Filter: " + (invert ? "inverted" : "none"));
+
+  
+
+  information.forEach(el => {
+    let node = document.createElement("div");
+    node.textContent = el;
+    document.getElementById("info").appendChild(node);
+  })
+
+  let frames = [];
+  let numFrames = 5
+
+  for(let i = 0; i < numFrames; i++){
+    drawSeed();
+    drawDotty(c2.width/10, c2.width/10, 9 * c2.width / 10, 9 * c2.width / 10 );
+    frames.push(ctx2.getImageData(0,0,c2.width, c2.height));
+  }
+
+  function drawCubeBg(x1,y1,x2,y2,w){
+    ctx2.resetTransform();
+    ctx2.strokeStyle = "white";
+    ctx2.lineWidth = 2;
+    ctx2.beginPath();
+    ctx2.moveTo(x1,y1);
+    ctx2.lineTo(x1+w,y1);
+    ctx2.lineTo(x1+w,y1+w);
+    ctx2.lineTo(x1,y1+w);
+    ctx2.lineTo(x1,y1);
+    
+    // ctx2.moveTo(x1 + x2, y1 + y2);
+    // ctx2.lineTo(x1 + x2+w, y1 + y2);
+    // ctx2.lineTo(x1 + x2+w, y1 + y2+w);
+    // ctx2.lineTo(x1 + x2, y1 + y2+w);
+    // ctx2.lineTo(x1 + x2, y1 + y2);
+    ctx2.stroke();
+
+    ctx2.restore();
+  }
+
+  function drawCube(x1,y1,x2,y2,w){
+    ctx2.resetTransform();
+    ctx2.strokeStyle = "white";
+    ctx2.lineWidth = 2;
+    ctx2.beginPath();
+    // ctx2.moveTo(x1,y1);
+    // ctx2.lineTo(x1+w,y1);
+    // ctx2.lineTo(x1+w,y1+w);
+    // ctx2.lineTo(x1,y1+w);
+    // ctx2.lineTo(x1,y1);
+    
+    ctx2.moveTo(x1 + x2, y1 + y2);
+    ctx2.lineTo(x1 + x2+w, y1 + y2);
+    ctx2.lineTo(x1 + x2+w, y1 + y2+w);
+    ctx2.lineTo(x1 + x2, y1 + y2+w);
+    ctx2.lineTo(x1 + x2, y1 + y2);
+
+
+    ctx2.moveTo(x1 + x2, y1 + y2);
+    ctx2.lineTo(x1,y1);
+    
+    ctx2.moveTo(x1 + x2 + w, y1 + y2);
+    ctx2.lineTo(x1+ w, y1);
+    
+    ctx2.moveTo(x1 + x2 + w, y1 + y2 + w);
+    ctx2.lineTo(x1 + w, y1 + w);
+    
+    ctx2.moveTo(x1+x2 , y1+y2 + w);
+    ctx2.lineTo(x1 , y1 + w);
+
+
+    ctx2.stroke();
+
+    ctx2.restore();
+  }
+
+  let currentF = 0;
+
+  // let cubeW = c2.width / 
+
+  function drawFrame(){
+    
+    ctx1.putImageData(seedFrames[currentF],0,0);
+    // ctx2.putImageData(frames[currentF],0,0);
+    
+    
+    ctx2.clearRect(0,0,c2.width, c2.width);
+
+    ctx2.save();
+    drawCubeBg(1.5 * c2.width / 10, 1.5 * c2.width / 10, c2.width / 10, c2.width / 10, 6 * c2.width / 10)
+    ctx2.restore();
+
+    drawDotty(c2.width / 10, c2.width / 10, 9 * c2.width / 10, 9 * c2.width / 10);
+
+    ctx2.save();
+    drawCube(1.5* c2.width / 10, 1.5 * c2.width / 10, c2.width/10, c2.width/10, 6 * c2.width / 10)
+    ctx2.restore();
+
+    currentF += 1;
+    currentF %= frames.length - 1;
+  }
+
+  setInterval(drawFrame, 150);
+
+
+  if(phase === "aligned"){
+  ctx2.translate(c2.width / 2, c2.width / 2)
+  ctx2.rotate(Math.PI * Math.random() * 2);
+  ctx2.translate(-c2.width / 2, -c2.width / 2)
+  ctx2.save();
+  }
+
+
+  function drawDotty(x1,y1,x2,y2){    
+    // random rotation
+    if(phase === "desynchronized"){
+      ctx2.translate((x2-x1) / 2 + x1,(y2-y1)/2  + y1)
+      ctx2.rotate(Math.PI * Math.random() * 2);
+      ctx2.translate(-(x2-x1) / 2 -x1, -(y2-y1)/2 - y1  )
+    }
+    let cellsize = (x2 - x1) / width; 
+
+    let x = x1 + cellsize / 2;
+    let y = y1 + cellsize / 2;
+
+    let imgData = ctx1.getImageData(0,0,width,width);
+
+    ctx2.fillStyle = dotFill;    
+
+
+    //constant size, regularly spaced
+    if(pattern === "regular"){
+      if(maxR === undefined){
+        maxR = between(cellsize / 2 - cellsize / 5, cellsize / 1.4);
+
+        if(dotFill === "rainbow"){
+          maxR = between(cellsize / 2 - cellsize / 5, cellsize / 2);
+        }
+      }
+    }
+
+    //random size, regularly spaced
+    if(pattern === "random regular"){
+      maxR = between(cellsize / 2 - cellsize / 5, cellsize / 1.4);
+      if (dotFill === "rainbow") {
+        maxR = between(cellsize / 2 - cellsize / 5, cellsize / 2);
+      }
+    }
+    
+    for( let i = 0; i < width; i++){
+
+      //lines
+      if(pattern === "lines"){
+        // maxR = between(cellsize / 2 - cellsize / 5, cellsize / 1.4);
+        maxR = between(cellsize / 2 - cellsize / 5, cellsize / 2);
+      }
+      
+      for(let j = 0; j < width; j++){
+        //clumps
+        if(pattern === "clumps"){
+          maxR = between(cellsize / 2 - cellsize / 5, cellsize / 1.4)
+        }
+        let dataPosition = (i * 4) + (j * 4 * width);
+        
+        let red = imgData.data[dataPosition]
+        let blue = imgData.data[dataPosition + 1]
+        let green = imgData.data[dataPosition + 2]
+        let alpha = imgData.data[dataPosition + 3]
+
+        // alpha between 1 and 255
+        // console.log(alpha);
+
+
+
+
+        // maxR = cellsize / 1.4
+
+        // let minR = cellsize / 60;
+        let minR = -cellsize / 20;
+        
+
+        let r = minR + (maxR - minR) * (alpha)/255;
+
+        if(r < 0){r = 0}
+
+        let circleX = x + i * cellsize;
+        let circleY = y + j * cellsize;
+        
+        
+        //rainbow fill
+        if(dotFill === "rainbow"){
+        ctx2.fillStyle = `hsla(${between(00, 360)},100%,${between(50,100)}%, 1)`
+        }
+
+        ctx2.beginPath();
+        ctx2.arc(circleX,circleY, r, 0, Math.PI * 2)
+        ctx2.fill();
+
+
+      }
+    }
+  }
+
+
+
+
+
+
+
+
+
+
+  // random normal distributed integer between endpoints
+
+    function gaussianRandom(start, end) {
+
+      return Math.floor(start + gaussianRand() * (end - start + 1));
+    }
+
+    function between(start, end) {
+
+      return Math.floor(start + Math.random() * (end - start + 1));
+    }
+
+    function gaussianRandomFrac(start, end) {
+      return start + gaussianRand() * (end - start);
+    }
+
+    // random gaussian distribution between 0 and 1
+    function gaussianRand() {
+      var rand = 0;
+
+      for (var i = 0; i < 6; i += 1) {
+        rand += Math.random();
+      }
+
+      return rand / 6;
+    }
+
+
+
+</script> 
+</html>
